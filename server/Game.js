@@ -5,6 +5,9 @@ var card = require('./Card.js')
 
 // 玩家
 function Player(params){
+	this._id = params.p_id;
+	this._name = params.p_name;
+
 	this._role = params.role;
 	this._character = params.character;
 	this._cards = [];
@@ -93,29 +96,21 @@ var assignRole = function(num){
 	return myUtils.shuffle(ret);
 }
 
-function Game(playerNum){
-	if(playerNum < 3 || playerNum > 9) {
-		throw 'out of player number limitation.';
-	}
+var GAME_STATUS = ['PENDING', 'PLAYING', 'FINISHED'];
 
+function Game(){
 	// 游戏牌
-	this._gameCards = this.initGameCards();	// 可用的游戏牌
+	this._gameCards = [];	// 可用的游戏牌
 	this._usedCards = [];	// 打出的牌
 	this._testCards = [];	// 试探牌堆
 	
 	// 玩家
 	this._players = [];
-	this._playerNum = playerNum;
 
-	var roles = assignRole(playerNum);
-	for (var i = 0; i < roles.length; i++) {
-		var p = new Player({'role': roles[i], 'character': null});	// 角色牌未定所以是null
-		p.cards(this.grapGameCard(2));
-		this._players.push(p);
-		p = null;
-	}
+	// 游戏状态
+	this._status = 'PENDING';
 }
-// 洗牌
+// 初始化游戏牌
 Game.prototype.initGameCards = function() {	// 81张游戏牌
 	var cards = [];	// TODO 确定哪些游戏牌
 	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_SECRET',	'func':'GAME_CARD_FUNC_TEST'}));
@@ -140,10 +135,14 @@ Game.prototype.initGameCards = function() {	// 81张游戏牌
 	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_LOCK'}));
 	return myUtils.shuffle(cards);
 }
+
+// 洗牌
 Game.prototype.shuffeGameCards = function(){
 	this._gameCards = this._gameCards.concat(myUtils.shuffle(this._usedCards));
 	this._usedCards = [];
 }
+
+// 摸牌
 Game.prototype.grapGameCard = function(num) {
 	// 如果牌不够，则重新洗牌，不包括'测试牌'
 	if(num > this._gameCards.length) {
@@ -153,21 +152,36 @@ Game.prototype.grapGameCard = function(num) {
 	for (var i = 0; i < num; i++) {
 		ret.push(this._gameCards.shift());
 	}
-	// ret.forEach(function(item){
-	// 	console.log('##########');
-	// 	for(prop in item){
-	// 		console.log(prop + ' ## ' + item[prop]);
-	// 	}
-	// })
-	// console.log('####################');
 	return ret;
 }
 Game.prototype.getPlayers = function(){
 	return this._players;
 }
+Game.prototype.startGame = function(params) {
+	if(params.playerNum < 3 || params.playerNum > 9) {
+		throw 'out of player number limitation.';
+	}
+	this._playerNum = params.playerNum;
 
-var game = new Game(3);
-console.log(game.getPlayers()[0].cards());
+	this._status = 'PLAYING';
+
+	this._gameCards = this.initGameCards();
+
+	// 安排身份
+	var roles = assignRole(params.playerNum);
+	for (var i = 0; i < roles.length; i++) {
+		var p = new Player({'p_id': i, 'p_name': 'x', 'role': roles[i]});
+		p.cards(this.grapGameCard(2));
+		this._players.push(p);
+		p = null;
+	}
+}
+
+
+var game = new Game();
+game.startGame(5);
+console.log(game.getPlayers()[0]);
+// console.log(game.getPlayers()[0].cards());
 // console.log(card.CARD_TYPES)
 
 
