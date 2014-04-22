@@ -30,7 +30,9 @@ Player.prototype.cards = function(param){	// getter and setter
 	return this._cards;
 }
 
-// 按玩家人数决定身份
+/**
+ * 按玩家人数决定身份
+ */
 var assignRole = function(num){
 	var ret = [];
 	switch(num){
@@ -112,7 +114,9 @@ function Game(){
 	this._status = 'PENDING';
 }
 
-// 初始化游戏牌
+/**
+ * 初始化游戏牌
+ */
 Game.prototype.initGameCards = function() {	// 81张游戏牌
 	var cards = [];	// TODO 确定哪些游戏牌
 	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_SECRET',	'func':'GAME_CARD_FUNC_TEST'}));
@@ -138,13 +142,17 @@ Game.prototype.initGameCards = function() {	// 81张游戏牌
 	return myUtils.shuffle(cards);
 }
 
-// 洗牌
+/**
+ * 洗牌
+ */
 Game.prototype.shuffeGameCards = function(){
 	this._gameCards = this._gameCards.concat(myUtils.shuffle(this._usedCards));
 	this._usedCards = [];
 }
 
-// 摸牌
+/**
+ * 摸牌
+ */
 Game.prototype.grapGameCard = function(num) {
 	// 如果牌不够，则重新洗牌，不包括'测试牌'
 	if(num > this._gameCards.length) {
@@ -156,11 +164,29 @@ Game.prototype.grapGameCard = function(num) {
 	}
 	return ret;
 }
+
+/**
+ * 按照玩家顺序player._number返回玩家.
+ * 玩家顺序为game._players的idx+1
+ */
 Game.prototype.getPlayer = function(num){
 	return (num > 0 && num < this._playerNum) ? this._players[num-1] : null
 }
 
-// 初始化游戏
+/**
+ * 开始游戏
+ * params = {
+ * 	'players' : [
+ * 		{'number': 1, 'name': 'Aegis'},
+ * 		{'number': 2, 'name': 'Andy'},
+ * 		{'number': 3, 'name': 'Bryan'},
+ * 		{'number': 4, 'name': 'Gary'},
+ * 		{'number': 5, 'name': 'Ryan'},
+ * 		{'number': 6, 'name': 'Sidney'},
+ * 		{'number': 7, 'name': 'SY'}
+ * 	]
+ * }
+ */
 Game.prototype.startGame = function(params) {
 	if(params.players.length < 3 || params.players.length > 9) {
 		throw 'out of player number limitation.';
@@ -187,7 +213,9 @@ Game.prototype.startGame = function(params) {
 	this._characterCards = this.initCharacterCards();
 }
 
-// 初始化角色牌
+/**
+ * 初始化角色牌
+ */
 Game.prototype.initCharacterCards = function(){
 	var ret = [];
 	for(character in card.CHARACTERS) {
@@ -196,7 +224,11 @@ Game.prototype.initCharacterCards = function(){
 	return myUtils.shuffle(ret);
 }
 
-// 安排角色
+/**
+ * 安排角色
+ *
+ * 返回 [{'number': 1, 'characters': [{characterCard},{characterCard}}]}, {}, ...]
+ */
 Game.prototype.getCharacters = function(){
 	if(this._status != 'PLAYING'){
 		return null;
@@ -221,6 +253,7 @@ Game.prototype.getCharacters = function(){
  * 从player._character里挑一个，设置回去player._character里。
  *
  * params: {'player number 1': '0 or 1', 'player number 2': '0 or 1', ....}
+ * for example {1:0, 2:1, 3:1, 4:0, 5:0, 6:1, 7:0}
  */
 Game.prototype.setCharacters = function(params){
 	// TODO validate params
@@ -232,6 +265,8 @@ Game.prototype.setCharacters = function(params){
 
 		this._players[i]['_character'] = this._players[i]['_character'][params[i+1]];
 	}
+
+	delete game._characterCards;	// free memory
 }
 
 
