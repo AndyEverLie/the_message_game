@@ -79,6 +79,7 @@ function GameCard(gameCard) {
 	}
 	Card.call(this, 'CARD_TYPE_GAME');
 	gameCard['name'] = GAME_CARD_FUNC[gameCard.func];
+	this._info = gameCard['name'] + "#" + MSG_TYPES[gameCard.type] + "#" + MSG_PASS[gameCard.pass]
 	this._gamecard = gameCard;
 
 	function _valide(gameCard){
@@ -114,6 +115,7 @@ function CharacterCard(who) {
 	}
 	Card.call(this, 'CARD_TYPE_CHARACTER');
 	this._characterCard = CHARACTERS[who];
+	this._info = this._characterCard['name'];
 
 	function _valide(who){
 		var ret = true;

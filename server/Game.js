@@ -5,14 +5,14 @@ var card = require('./Card.js')
 
 // 玩家
 function Player(params){
-	this._id = params.p_id;
-	this._name = params.p_name;
+	this._number = params.p_number;		// 玩家序号
+	this._name = params.p_name;			// 玩家名称
 
-	this._role = params.role;
-	this._character = params.character;
-	this._cards = [];
+	this._role = params.role;			// 玩家身份
+	this._character = null;				// 玩家角色
+	this._cards = [];					// 玩家手牌
 
-	this._isAlive = true;
+	this._isAlive = true;				// 玩家活着?
 }
 Player.prototype.role = function(){
 	return this._role;
@@ -101,15 +101,17 @@ var GAME_STATUS = ['PENDING', 'PLAYING', 'FINISHED'];
 function Game(){
 	// 游戏牌
 	this._gameCards = [];	// 可用的游戏牌
-	this._usedCards = [];	// 打出的牌
-	this._testCards = [];	// 试探牌堆
+	this._usedCards = [];	// 打出的牌堆
+	this._testCards = [];	// 试探牌堆堆
 	
 	// 玩家
 	this._players = [];
+	this._characterCards = [];	// 角色牌堆
 
 	// 游戏状态
 	this._status = 'PENDING';
 }
+
 // 初始化游戏牌
 Game.prototype.initGameCards = function() {	// 81张游戏牌
 	var cards = [];	// TODO 确定哪些游戏牌
@@ -154,34 +156,109 @@ Game.prototype.grapGameCard = function(num) {
 	}
 	return ret;
 }
-Game.prototype.getPlayers = function(){
-	return this._players;
+Game.prototype.getPlayer = function(num){
+	return (num > 0 && num < this._playerNum) ? this._players[num-1] : null
 }
+
+// 初始化游戏
 Game.prototype.startGame = function(params) {
-	if(params.playerNum < 3 || params.playerNum > 9) {
+	if(params.players.length < 3 || params.players.length > 9) {
 		throw 'out of player number limitation.';
 	}
-	this._playerNum = params.playerNum;
+	this._playerNum = params.players.length;
 
 	this._status = 'PLAYING';
 
 	this._gameCards = this.initGameCards();
 
 	// 安排身份
-	var roles = assignRole(params.playerNum);
-	for (var i = 0; i < roles.length; i++) {
-		var p = new Player({'p_id': i, 'p_name': 'x', 'role': roles[i]});
+	var roles = assignRole(this._playerNum);
+	for (var i = 0; i < this._playerNum; i++) {
+		var p = new Player({
+			'p_number': params.players[i]['number'],
+			'p_name': params.players[i]['name'],
+			'role': roles[i]});
+
 		p.cards(this.grapGameCard(2));
 		this._players.push(p);
 		p = null;
 	}
+
+	this._characterCards = this.initCharacterCards();
+}
+
+// 初始化角色牌
+Game.prototype.initCharacterCards = function(){
+	var ret = [];
+	for(character in card.CHARACTERS) {
+		ret.push(card.createCharacterCard(character));
+	}
+	return myUtils.shuffle(ret);
+}
+
+// 安排角色
+Game.prototype.getCharacters = function(){
+	if(this._status != 'PLAYING'){
+		return null;
+	}
+
+	var ret = [];
+	for(var i=0; i<this._playerNum; i++){
+		var tmpTwoChar = [];
+		tmpTwoChar.push(this._characterCards.shift());
+		tmpTwoChar.push(this._characterCards.shift());
+		this._players[i]['_character'] = tmpTwoChar;
+
+		// return to players for choose.
+		ret.push({'number': this._players[i]['_number'], 'characters': tmpTwoChar})
+	}
+
+	return ret;
+}
+
+/**
+ * 选定角色
+ * 从player._character里挑一个，设置回去player._character里。
+ *
+ * params: {'player number 1': '0 or 1', 'player number 2': '0 or 1', ....}
+ */
+Game.prototype.setCharacters = function(params){
+	// TODO validate params
+
+	for(var i=0; i<this._playerNum; i++) {
+		if(this._players[i]['_number'] != i+1) {
+			throw 'game error!';
+		}
+
+		this._players[i]['_character'] = this._players[i]['_character'][params[i+1]];
+	}
 }
 
 
+// ==========
+// test data
+// ==========
+var gameParam = {
+	'players' : [
+		{'number': 1, 'name': 'Aegis'},
+		{'number': 2, 'name': 'Andy'},
+		{'number': 3, 'name': 'Bryan'},
+		{'number': 4, 'name': 'Gary'},
+		{'number': 5, 'name': 'Ryan'},
+		{'number': 6, 'name': 'Sidney'},
+		{'number': 7, 'name': 'SY'}
+	]
+}
 var game = new Game();
-game.startGame(5);
-console.log(game.getPlayers()[0]);
-// console.log(game.getPlayers()[0].cards());
+game.startGame(gameParam);
+game.getCharacters();
+
+console.log(game.getPlayer(2));
+game.setCharacters({1:0, 2:1, 3:1, 4:0, 5:0, 6:1, 7:0});
+console.log(game.getPlayer(2));
+// console.log(game._characterCards.length);
+
+
 // console.log(card.CARD_TYPES)
 
 
