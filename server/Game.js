@@ -118,27 +118,106 @@ function Game(){
  * 初始化游戏牌
  */
 Game.prototype.initGameCards = function() {	// 81张游戏牌
-	var cards = [];	// TODO 确定哪些游戏牌
-	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_SECRET',	'func':'GAME_CARD_FUNC_TEST'}));
-	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_LOCK'}));
-	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_DIRECT',	'func':'GAME_CARD_FUNC_INTERCEPT'}));
-	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_SECRET',	'func':'GAME_CARD_FUNC_DECODE'}));
-	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_SECRET',	'func':'GAME_CARD_FUNC_LOCK'}));
+	var cards = [];
+	// 真假莫辨	从自己开始逆时针每位玩家抽取一张牌作为情报	文本	1+1+1=3
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT', 	'func':'GAME_CARD_FUNC_AOE'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_AOE'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_AOE'}));
+
+	// 调虎离山	指定一位玩家不参与此次情报传递	文本	2+2+2=6
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT', 	'func':'GAME_CARD_FUNC_PASS'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT', 	'func':'GAME_CARD_FUNC_PASS'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_PASS'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_PASS'}));
 	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_PASS'}));
-	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_SECRET',	'func':'GAME_CARD_FUNC_DECODE'}));
-	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_LOCK'}));
-	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_DIRECT',	'func':'GAME_CARD_FUNC_AOE'}));
-	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_LOCK'}));
-	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_LOCK'}));
-	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_LOCK'}));
-	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_LOCK'}));
-	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_LOCK'}));
-	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_LOCK'}));
-	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_LOCK'}));
-	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_LOCK'}));
-	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_LOCK'}));
-	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_LOCK'}));
-	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_LOCK'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_PASS'}));
+
+	// 截获	获得一张传递中的情报	密电	1+1+6=8
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_INTERCEPT'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_INTERCEPT'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_INTERCEPT'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_INTERCEPT'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_INTERCEPT'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_INTERCEPT'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_INTERCEPT'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_INTERCEPT'}));
+
+	// 退回	当情报到达玩家面前时使用，改变情报的传递方向	文本	3+3+2=8
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT', 	'func':'GAME_CARD_FUNC_BACK'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT', 	'func':'GAME_CARD_FUNC_BACK'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_TEXT', 	'func':'GAME_CARD_FUNC_BACK'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_BACK'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_BACK'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_BACK'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_BACK'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_TEXT',		'func':'GAME_CARD_FUNC_BACK'}));
+
+	// 破译	检视传递到玩家面前的情报	破译	2+2+2=6
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_DECODE'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_DECODE'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_DECODE'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_DECODE'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_DECODE'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_DECODE'}));
+
+	// 烧毁	烧毁一份假情报	直达	2+2+2=6
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BURN'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BURN'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BURN'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BURN'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BURN'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BURN'}));
+
+	// 识破	使一张卡牌无效	直达	5+5+4=14
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BREAK'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BREAK'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BREAK'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BREAK'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BREAK'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BREAK'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BREAK'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BREAK'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BREAK'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BREAK'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BREAK'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BREAK'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BREAK'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_BREAK'}));
+
+	// 试探	试探一位玩家是否为某一身份，成功则可令对方弃一张手牌或摸两张牌，根据牌面文字而定	密电	6+6+6=18
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_SECRET', 	'func':'GAME_CARD_FUNC_TEST'}));
+
+	// 锁定	指定一位玩家必须接受此回合传递的情报	直达	3+3+6=12
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_LOCK'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_LOCK'}));
+	cards.push(card.createGameCard({'type':'MSG_RED',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_LOCK'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_LOCK'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_LOCK'}));
+	cards.push(card.createGameCard({'type':'MSG_BLUE',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_LOCK'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_LOCK'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_LOCK'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_LOCK'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_LOCK'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_LOCK'}));
+	cards.push(card.createGameCard({'type':'MSG_GRAY',	'pass':'MSG_PASS_DIRECT', 	'func':'GAME_CARD_FUNC_LOCK'}));
+
 	return myUtils.shuffle(cards);
 }
 
@@ -205,12 +284,29 @@ Game.prototype.startGame = function(params) {
 			'p_name': params.players[i]['name'],
 			'role': roles[i]});
 
-		p.cards(this.grapGameCard(2));
+		// p.cards(this.grapGameCard(2));
 		this._players.push(p);
 		p = null;
 	}
 
 	this._characterCards = this.initCharacterCards();
+}
+
+/**
+ * 分发3张游戏牌
+ *
+ * 返回 {'palyer._number': [GameCard1, GameCard2, GameCard3]}
+ * e.g. {'1':[锁定#红色情报#直达, 锁定#屎#直达, 试探#红色情报#密电], '2': [...]}
+ */
+Game.prototype.startGameCards = function(){
+	var ret = {};
+	for (var i = 0; i < this._playerNum; i++) {
+		this._players[i]['_cards'] = this.grapGameCard(3);
+		ret[i+1] = this._players[i]['_cards'];
+	}
+
+	// console.log(ret);
+	return ret;
 }
 
 /**
@@ -278,15 +374,15 @@ var gameParam = {
 		{'number': 1, 'name': 'Aegis'},
 		{'number': 2, 'name': 'Andy'},
 		{'number': 3, 'name': 'Bryan'},
-		{'number': 4, 'name': 'Gary'},
-		{'number': 5, 'name': 'Ryan'},
-		{'number': 6, 'name': 'Sidney'},
-		{'number': 7, 'name': 'SY'}
+		{'number': 4, 'name': 'Gary'}
 	]
 }
 var game = new Game();
 game.startGame(gameParam);
 game.getCharacters();
+// console.log('###$$ ' + game._gameCards.length);
+
+game.startGameCards();
 
 console.log(game.getPlayer(2));
 game.setCharacters({1:0, 2:1, 3:1, 4:0, 5:0, 6:1, 7:0});
