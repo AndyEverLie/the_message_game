@@ -266,7 +266,7 @@ Game.prototype.getPlayer = function(num){
  * 	]
  * }
  */
-Game.prototype.startGame = function(params) {
+Game.prototype.phaseGameSetting = function(params) {
 	if(params.players.length < 3 || params.players.length > 9) {
 		throw 'out of player number limitation.';
 	}
@@ -292,22 +292,6 @@ Game.prototype.startGame = function(params) {
 	this._characterCards = this.initCharacterCards();
 }
 
-/**
- * 分发3张游戏牌
- *
- * 返回 {'palyer._number': [GameCard1, GameCard2, GameCard3]}
- * e.g. {'1':[锁定#红色情报#直达, 锁定#屎#直达, 试探#红色情报#密电], '2': [...]}
- */
-Game.prototype.startGameCards = function(){
-	var ret = {};
-	for (var i = 0; i < this._playerNum; i++) {
-		this._players[i]['_cards'] = this.grapGameCard(3);
-		ret[i+1] = this._players[i]['_cards'];
-	}
-
-	// console.log(ret);
-	return ret;
-}
 
 /**
  * 初始化角色牌
@@ -325,7 +309,7 @@ Game.prototype.initCharacterCards = function(){
  *
  * 返回 [{'number': 1, 'characters': [{characterCard},{characterCard}}]}, {}, ...]
  */
-Game.prototype.getCharacters = function(){
+Game.prototype.phasePickCharacters = function(){
 	if(this._status != 'PLAYING'){
 		return null;
 	}
@@ -339,6 +323,7 @@ Game.prototype.getCharacters = function(){
 
 		// return to players for choose.
 		ret.push({'number': this._players[i]['_number'], 'characters': tmpTwoChar})
+		// ret.push({this._players[i]['_number']: tmpTwoChar})
 	}
 
 	return ret;
@@ -351,7 +336,7 @@ Game.prototype.getCharacters = function(){
  * params: {'player number 1': '0 or 1', 'player number 2': '0 or 1', ....}
  * for example {1:0, 2:1, 3:1, 4:0, 5:0, 6:1, 7:0}
  */
-Game.prototype.setCharacters = function(params){
+Game.prototype.phasePickCharacterDone = function(params){
 	// TODO validate params
 
 	for(var i=0; i<this._playerNum; i++) {
@@ -363,6 +348,24 @@ Game.prototype.setCharacters = function(params){
 	}
 
 	delete game._characterCards;	// free memory
+}
+
+
+/**
+ * 分发3张游戏牌
+ *
+ * 返回 {'palyer._number': [GameCard1, GameCard2, GameCard3]}
+ * e.g. {'1':[锁定#红色情报#直达, 锁定#屎#直达, 试探#红色情报#密电], '2': [...]}
+ */
+Game.prototype.phaseStartGameCards = function(){
+	var ret = {};
+	for (var i = 0; i < this._playerNum; i++) {
+		this._players[i]['_cards'] = this.grapGameCard(3);
+		ret[i+1] = this._players[i]['_cards'];
+	}
+
+	// console.log(ret);
+	return ret;
 }
 
 
@@ -381,19 +384,20 @@ var gameParam = {
 	]
 }
 var game = new Game();
-game.startGame(gameParam);
-game.getCharacters();
+game.phaseGameSetting(gameParam);
+game.phasePickCharacters();
 // console.log('###$$ ' + game._gameCards.length);
 
-game.startGameCards();
+console.log(game.phaseStartGameCards());
 
 console.log(game.getPlayer(2));
-game.setCharacters({1:0, 2:1, 3:1, 4:0, 5:0, 6:1, 7:0});
+game.phasePickCharacterDone({1:0, 2:1, 3:1, 4:0, 5:0, 6:1, 7:0});
 console.log(game.getPlayer(2));
+
+
 // console.log(game._characterCards.length);
-
-
 // console.log(card.CARD_TYPES)
+
 
 
 
