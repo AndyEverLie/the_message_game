@@ -81,6 +81,7 @@ function GameCard(gameCard) {
 	gameCard['name'] = GAME_CARD_FUNC[gameCard.func];
 	this._info = gameCard['name'] + "#" + MSG_TYPES[gameCard.type] + "#" + MSG_PASS[gameCard.pass]
 	this._gamecard = gameCard;
+	this._id = gameCard.id;	// for tracing game card.
 
 	function _valide(gameCard){
 		var ret = true;
