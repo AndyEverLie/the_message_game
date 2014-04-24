@@ -1,15 +1,15 @@
 var fs = require('fs'),
-	http = require('http')
+	http = require('http'),
+	iconv = require('iconv-lite');
 
 var htmlPathPrefix = 'http://www.cncgcg.com/fs/card/',
 	htmlPathSufix = '?page.pageNum=',
 	pages = [8, 7, 1]
 
 var processHtml = function(dest) {
-console.log(dest);
 	var pattern = /http:\/\/www\.cncgcg\.com\/fs\/upload\/\d+\.png/gi;
 	fs.readFile(dest, function(err, data){
-		data = data.toString('utf8');
+		data = iconv.decode(data, 'gbk');
 		var res = data.match(pattern);
 		for (var i = 0; i < res.length; i++) {
 			// download(res[i], res[i].substr(res[i].lastIndexOf('/')+1), function(){
@@ -30,9 +30,9 @@ var downloadHtml = function(cardType, page) {
 }
 
 var download = function(path, dest, cb) {
-	console.log('PATH: ' + path);
-	console.log('DEST: ' + dest);
-	var file = fs.createWriteStream(dest, {'encoding': 'utf8'});
+	// console.log('PATH: ' + path);
+	// console.log('DEST: ' + dest);
+	var file = fs.createWriteStream(dest);
 	var request = http.get(path, function(resp){
 		resp.pipe(file);
 		file.on('finish', function(){
