@@ -104,6 +104,20 @@ var assignRole = function(num){
 }
 
 var GAME_STATUS = ['PENDING', 'PLAYING', 'FINISHED'];
+var GAME_PHASES = {
+	'PHASE_PICK_ROLE': 			1,	// 挑选角色
+	'PHASE_PICK_CHARACTER': 	2,	// 决定身份
+	'PHASE_SEND_GAME_CARD': 	3,	// 分发游戏牌
+	'PHASE_ROUND_BEGIN': 		4,	// 回合开始阶段
+	'PHASE_ROUND_GRAB_CARDS': 	5,	// 抽牌阶段
+	'PHASE_ROUND_PLAY_CARD_1': 	6,	// 出牌阶段1
+	'PHASE_ROUND_PASS_MSG_1': 	7,	// 传递情报阶段步骤1 - 情报传递
+	'PHASE_ROUND_PASS_MSG_2': 	8,	// 传递情报阶段步骤2 - 情报到达
+	'PHASE_ROUND_PASS_MSG_3': 	9,	// 传递情报阶段步骤3 - 情报接收
+	'PHASE_ROUND_PLAY_CARD_2': 	10,	// 出牌阶段2, 跟出牌阶段1一样
+	'PHASE_ROUND_END': 			11	// 回合结束阶段
+
+}
 
 function Game(){
 	// 游戏牌

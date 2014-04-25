@@ -6,7 +6,8 @@
 	},
 	"dependencies": {
 		"socket.io": "*",
-		"iconv-lite": "*"
+		"iconv-lite": "*",
+		"express": "*"
 	},
 	"scripts": {
 		"start": "sudo node game.js"

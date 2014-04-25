@@ -12,8 +12,8 @@ var processHtml = function(dest) {
 		data = iconv.decode(data, 'gbk');
 		var res = data.match(pattern);
 		for (var i = 0; i < res.length; i++) {
-			// download(res[i], res[i].substr(res[i].lastIndexOf('/')+1), function(){
-			// });
+			download(res[i], res[i].substr(res[i].lastIndexOf('/')+1), function(){
+			});
 			data = data.replace(res[i], res[i].substr(res[i].lastIndexOf('/')+1));
 		}
 		fs.writeFile(dest, data, {'encoding':'utf8'});
