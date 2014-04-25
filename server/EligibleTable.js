@@ -17,41 +17,61 @@
 // 	1: '他人'
 // }
 
-exports.FUNC_CARD_TABLE = {
-	'GAME_CARD_FUNC_LOCK' : {
-		'PHASE': [6, 7, 10],
-		'USER': [0]
-	},
-	'GAME_CARD_FUNC_PASS' : {
-		'PHASE': [7],
-		'USER': [0, 1]
-	},
-	'GAME_CARD_FUNC_BACK' : {
-		'PHASE': [8],
-		'USER': [1]
-	},
-	'GAME_CARD_FUNC_INTERCEPT' : {
-		'PHASE': [7],
-		'USER': [1]
-	},
-	'GAME_CARD_FUNC_DECODE' : {
-		'PHASE': [8],
-		'USER': [0, 1]
-	},
-	'GAME_CARD_FUNC_BURN' : {
-		'PHASE': [4, 6, 10],
-		'USER': [0, 1]
-	},
-	'GAME_CARD_FUNC_BREAK' : {
-		'PHASE': [4, 6, 10],
-		'USER': [0, 1]
-	},
-	'GAME_CARD_FUNC_TEST' : {
-		'PHASE': [6, 10],
-		'USER': [0]
-	},
-	'GAME_CARD_FUNC_AOE' : {
-		'PHASE': [6, 10],
-		'USER': [0]
+/**
+use this pattern to make the table works on both server/client side
+
+(function(exports) {
+	var oo = function() {};
+	exports.xx = oo;
+})(typeof global === "undefined" ? window : exports);
+*/
+
+(function(exports) {
+	exports.FUNC_CARD_TABLE = {
+		'GAME_CARD_FUNC_LOCK' : {
+			'PHASE': [6, 7, 10],
+			'USER': [0]
+		},
+		'GAME_CARD_FUNC_PASS' : {
+			'PHASE': [7],
+			'USER': [0, 1]
+		},
+		'GAME_CARD_FUNC_BACK' : {
+			'PHASE': [8],
+			'USER': [1]
+		},
+		'GAME_CARD_FUNC_INTERCEPT' : {
+			'PHASE': [7],
+			'USER': [1]
+		},
+		'GAME_CARD_FUNC_DECODE' : {
+			'PHASE': [8],
+			'USER': [0, 1]
+		},
+		'GAME_CARD_FUNC_BURN' : {
+			'PHASE': [4, 6, 10],
+			'USER': [0, 1]
+		},
+		'GAME_CARD_FUNC_BREAK' : {
+			'PHASE': [4, 6, 10],
+			'USER': [0, 1]
+		},
+		'GAME_CARD_FUNC_TEST' : {
+			'PHASE': [6, 10],
+			'USER': [0]
+		},
+		'GAME_CARD_FUNC_AOE' : {
+			'PHASE': [6, 10],
+			'USER': [0]
+		}
 	}
-}
+
+	exports.SKILL_TABLE = {
+		
+	}
+
+})(typeof global === "undefined" ? window : exports);	
+
+
+
+

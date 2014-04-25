@@ -1,7 +1,8 @@
 // Game.js
 
 var card = require('./Card.js')
-	, myUtils = require('./utils.js');
+	, myUtils = require('./utils.js')
+	, tables = require('./EligibleTable.js');
 
 // 玩家
 function Player(params){
