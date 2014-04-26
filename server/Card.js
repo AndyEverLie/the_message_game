@@ -368,11 +368,12 @@ module.exports = {
 	createCharacterCard : function(who){
 		return new CharacterCard(who);
 	},
-	CARD_TYPES : CARD_TYPES,
+	CARD_TYPES: CARD_TYPES,
 	ROLES: ROLES,
 	MSG_TYPES: MSG_TYPES,
 	MSG_PASS: MSG_PASS,
 	GAME_CARD_FUNC: GAME_CARD_FUNC,
-	CHARACTERS: CHARACTERS
+	CHARACTERS: CHARACTERS,
+	SKILLS: SKILLS
 }
 

@@ -1,26 +1,47 @@
-<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Cocos2d-html5 Hello World test</title>
-    <link rel="icon" type="image/GIF" href="res/favicon.ico"/>
-    <meta name="apple-mobile-web-app-capable" content="yes"/>
-    <meta name="full-screen" content="yes"/>
-    <meta name="screen-orientation" content="portrait"/>
-    <meta name="x5-fullscreen" content="true"/>
-    <meta name="360-fullscreen" content="true"/>
-    <style>
-        body, canvas, div {
-            -moz-user-select: none;
-            -webkit-user-select: none;
-            -ms-user-select: none;
-            -khtml-user-select: none;
-            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        }
-    </style>
+	<title>AA</title>
+	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
 </head>
-<body style="padding:0; margin: 0; background: #000;">
-<canvas id="gameCanvas" width="800" height="450"></canvas>
-<script src="cocos2d.js"></script>
+<body>
+	<div id="board" style="width: 800px; height: 600px; border:1px solid #999999;"></div>
+	<input type="button" id="getCards" value="getCards" /><br />
+	<input type="text" id="whichCard" value="1" />
+	<input type="button" id="playCard" value="playCard" />
+
+	<script>
+	$(function(){
+		var socket = io.connect('http://localhost:8008');
+		socket.on('news', function (data) {
+			$('#board').append(data.content + '<br>');
+			console.log(data);
+			socket.emit('my other event', { my: 'data' });
+		});
+
+		$('#getCards').on('click', function(){
+			$('#board').append('getting cards...<br>');
+			socket.emit('getCards', { player: 1, num: 2 });
+		})
+
+		var player1 = {};
+		socket.on('getCardsDone', function (data) {
+			player1.cards = data.cards;
+			$('#board').append(player1.cards + '<br>');
+		});
+
+		$('#playCard').on('click', function(){
+			$('#board').append('playingn cards...<br>');
+			socket.emit('playCard', { player: 1, whichCard: $('#whichCard').val });
+		})
+
+		socket.on('playCardDone', function (data) {
+			$('#board').append('play card done, do sth else.<br>');
+		});
+	});
+	  
+	</script>
 </body>
 </html>
+
+
