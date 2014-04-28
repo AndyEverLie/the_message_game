@@ -1,47 +1,90 @@
+<!DOCTYPE html>
 <html>
 <head>
-	<title>AA</title>
-	<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+    <meta charset="utf-8">
+    <title>The Message Game</title>
+    <link rel="icon" type="image/GIF" href="res/favicon.ico"/>
+    <style>
+        /*body, canvas, div {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            -khtml-user-select: none;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        }*/
+
+        body {
+            background-color: #0e0a00;
+            background: url(web_res/images/main_bg.jpg);
+            width: 100%;
+        }
+
+        .main {
+            width: 1000px;
+            height: 600px;
+            margin: 25px auto;
+        }
+
+        .dialog {
+            position: absolute;
+            top: 132px;
+            left: 232px;
+            width: 574px;
+            font-size: 0;
+            text-align: center;
+        }
+
+        .dlgtit {
+            height: 36px;
+            background-image: url(web_res/images/dialog_mid.png);
+        }
+
+        .login{
+            height: 160px;
+        }
+
+        .input_field{
+            border: 0px;
+            width: 160px;
+            height: 26px;
+            line-height: 26px;
+            color: #fef6d6 ! important;
+            background: url(web_res/images/input_bg.png) transparent no-repeat left ! important;
+            padding: 0px 5px;
+        }
+
+        .btn_user_login {
+            border: 0px;
+            width: 166px;
+            height: 52px;
+            background: url(web_res/images/denglubuttom.png) transparent no-repeat left;
+            _background: none;
+            _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="web_res/images/denglubuttom.png");
+        }
+    </style>
 </head>
 <body>
-	<div id="board" style="width: 800px; height: 600px; border:1px solid #999999;"></div>
-	<input type="button" id="getCards" value="getCards" /><br />
-	<input type="text" id="whichCard" value="1" />
-	<input type="button" id="playCard" value="playCard" />
+    <div class="main">
+        <canvas id="gameCanvas" width="1000" height="600"></canvas>
+    </div>
 
-	<script>
-	$(function(){
-		var socket = io.connect('http://localhost:8008');
-		socket.on('news', function (data) {
-			$('#board').append(data.content + '<br>');
-			console.log(data);
-			socket.emit('my other event', { my: 'data' });
-		});
-
-		$('#getCards').on('click', function(){
-			$('#board').append('getting cards...<br>');
-			socket.emit('getCards', { player: 1, num: 2 });
-		})
-
-		var player1 = {};
-		socket.on('getCardsDone', function (data) {
-			player1.cards = data.cards;
-			$('#board').append(player1.cards + '<br>');
-		});
-
-		$('#playCard').on('click', function(){
-			$('#board').append('playingn cards...<br>');
-			socket.emit('playCard', { player: 1, whichCard: $('#whichCard').val });
-		})
-
-		socket.on('playCardDone', function (data) {
-			$('#board').append('play card done, do sth else.<br>');
-		});
-	});
-	  
-	</script>
+    <div class="dialog" id="dialog">
+        <div>
+          <img src="web_res/images/dialog_top.png" width="574" height="31">
+        </div>
+        <div class="dlgtit">
+          <div class="text_title" id="text_title"><img id="it_img" src="web_res/images/dialog_title1.png"></div>
+        </div>
+        <div class="login">
+            <div style="margin-top: 20px;"></div>
+            <input type="text" id="username" class="input_field" tabindex="1" maxlength="40" placeholder="大佬，请响朵！" />
+            <div style="margin-top: 30px;">asdfas</div>
+            <button id="btn_user_login" class="btn_user_login" />
+        </div>
+        <div>
+          <img src="web_res/images/dialog_bottom.png" width="574" height="31">
+        </div>
+    </div>
+    <script src="cocos2d.js"></script>
 </body>
 </html>
-
-

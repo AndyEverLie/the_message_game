@@ -35,17 +35,43 @@ var cocos2dApp = cc.Application.extend({
         cc.AppController.shareAppController().didFinishLaunchingWithOptions();
     },
     applicationDidFinishLaunching:function () {
-        if(cc.RenderDoesnotSupport()){
-            //show Information to user
-            alert("Browser doesn't support WebGL");
-            return false;
+        // initialize director
+        var director = cc.Director.getInstance();
+
+        cc.EGLView.getInstance()._adjustSizeToBrowser();
+        var screenSize = cc.EGLView.getInstance().getFrameSize();
+
+        // var resourceSize = cc.size(480, 800);
+        // var designSize = cc.size(480, 800);
+        var resourceSize = cc.size(1000, 600);
+        var designSize = cc.size(1000, 600);
+
+        var searchPaths = [];
+        var resDirOrders = [];
+
+        searchPaths.push("res");
+        cc.FileUtils.getInstance().setSearchPaths(searchPaths);
+
+        var platform = cc.Application.getInstance().getTargetPlatform();
+
+        if (platform == cc.TARGET_PLATFORM.MOBILE_BROWSER) {
+            resDirOrders.push("HD");
+        }
+        else if (platform == cc.TARGET_PLATFORM.PC_BROWSER) {
+            if (screenSize.height >= 800) {
+                resDirOrders.push("HD");
+            }
+            else {
+                // resourceSize = cc.size(320, 480);
+                // designSize = cc.size(320, 480);
+                resDirOrders.push("Normal");
+            }
         }
 
+        cc.FileUtils.getInstance().setSearchResolutionsOrder(resDirOrders);
+        director.setContentScaleFactor(resourceSize.width / designSize.width);
+        cc.EGLView.getInstance().setDesignResolutionSize(designSize.width, designSize.height, cc.RESOLUTION_POLICY.SHOW_ALL);
         cc.EGLView.getInstance().resizeWithBrowserSize(true);
-        cc.EGLView.getInstance().setDesignResolutionSize(800, 450, cc.RESOLUTION_POLICY.SHOW_ALL);
-
-	    // initialize director
-	    var director = cc.Director.getInstance();
 
         // turn on display FPS
         director.setDisplayStats(this.config['showFPS']);
@@ -61,4 +87,5 @@ var cocos2dApp = cc.Application.extend({
         return true;
     }
 });
-var myApp = new cocos2dApp(HelloWorldScene);
+
+var myApp = new cocos2dApp(MyScene);
