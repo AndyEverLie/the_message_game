@@ -1,7 +1,7 @@
 var app = require('http').createServer(handler)
   , io = require('socket.io').listen(app)
   , fs = require('fs')
-  , game = require('server/Game.js')
+  , game = require('./server/Game.js')
 
 app.listen(8008);
 
@@ -33,5 +33,9 @@ io.sockets.on('connection', function (socket) {
   socket.on('playCard', function (data) {
     console.log(data);	// { player: 1, num: 2 }
     socket.emit('playCardDone', { cards: [12,34] })
+  });
+
+  socket.on('get_game_list', function(data){
+    socket.emit('get_game_list_done', {items: ['a', 'b', 'c']});
   });
 });

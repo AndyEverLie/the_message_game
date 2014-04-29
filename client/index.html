@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>The Message Game</title>
     <link rel="icon" type="image/GIF" href="res/favicon.ico"/>
+    <script src="jquery-1.11.0.min.js"></script>
     <style>
         /*body, canvas, div {
             -moz-user-select: none;
@@ -30,8 +31,9 @@
             top: 132px;
             left: 232px;
             width: 574px;
-            font-size: 0;
+            /*font-size: 0;*/
             text-align: center;
+            display: none;
         }
 
         .dlgtit {
@@ -61,6 +63,30 @@
             _background: none;
             _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="web_res/images/denglubuttom.png");
         }
+
+        #games {
+            display: none;
+            border: 2px solid #666;
+            position: absolute;
+            top: 132px;
+            left: 300px;
+            width: 480px;
+            height: 300px;
+            text-align: center;
+            color: #FFFFFF;
+            padding: 10px;
+            text-align: left;
+            background: url(web_res/images/transparency_bg.png) transparent ! important;
+        }
+
+        #games ul li {
+            text-decoration: none;
+            margin-top: 8px;
+            list-style: none;
+        }
+        #games ul li:hover {
+            background-color: #999;
+        }
     </style>
 </head>
 <body>
@@ -78,13 +104,39 @@
         <div class="login">
             <div style="margin-top: 20px;"></div>
             <input type="text" id="username" class="input_field" tabindex="1" maxlength="40" placeholder="大佬，请响朵！" />
-            <div style="margin-top: 30px;">asdfas</div>
+            <div style="margin-top: 30px;"></div>
             <button id="btn_user_login" class="btn_user_login" />
         </div>
         <div>
           <img src="web_res/images/dialog_bottom.png" width="574" height="31">
         </div>
     </div>
+
+    <div id="games">
+        <div style="margin-top: 20px; text-align: center; font-size: 30px;">请选择游戏</div>
+        <ul id="game_list">
+        </ul>
+    </div>
+
     <script src="cocos2d.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js
+"></script>
+    <script>
+        var socket = io.connect('http://localhost:8008');
+        socket.on('get_game_list_done', function(data){
+            $.each(data.items, function(idx, item){
+                $('#game_list').append('<li>' + item + '</li>');
+            })
+        })
+
+        $(document).ready(function(){
+            $('#dialog').show();
+        });
+        $('#btn_user_login').click(function(){
+            socket.emit('get_game_list');
+            $('#dialog').hide();
+            $('#games').show();
+        });
+    </script>
 </body>
 </html>
