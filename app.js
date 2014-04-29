@@ -20,8 +20,8 @@ function handler (req, res) {
 
 io.sockets.on('connection', function (socket) {
   socket.emit('welcome', { content: 'welcome to the message game.' });
-  
-  socket.on('my other event', function (data) {
+
+  socket.on('startGame', function (data) {
     console.log(data);
   });
 
