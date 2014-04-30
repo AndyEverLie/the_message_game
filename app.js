@@ -3,7 +3,13 @@ var app = require('http').createServer(handler)
   , fs = require('fs')
   , game = require('./server/Game.js');
 
+app.listen(8008);
+
+// connections[data.username] = socket;
+// connections[data.username]['id']
+// connections[data.username]['isDisconnected']
 var connections = {};
+
 /**
  * Of current game instances.
  * for the reason that not a bit amount of players, we needn't 
@@ -11,7 +17,16 @@ var connections = {};
  */
 var games = {};
 
-app.listen(8008);
+// init rooms
+games['月圆之夜'] = new game.Game('月圆之夜');
+games['紫禁之颠'] = new game.Game('紫禁之颠');
+games['一剑西来'] = new game.Game('一剑西来');
+games['天外飞仙'] = new game.Game('天外飞仙');
+
+games['月圆之夜']['tmpPlayers'] = [];
+games['紫禁之颠']['tmpPlayers'] = [];
+games['一剑西来']['tmpPlayers'] = [];
+games['天外飞仙']['tmpPlayers'] = [];
 
 function handler (req, res) {
   fs.readFile(__dirname + '/client/index.html',
@@ -68,13 +83,63 @@ io.sockets.on('connection', function (socket) {
    */
   socket.on('get_game_list', function(data){
     console.log('get_game_list was emitted.');
+    update_game_list();
+  });
+
+  function update_game_list(){
     var ret = [];
     for(g in games){
-      ret.push(g);
+      ret.push({name:g, count:games[g]['tmpPlayers'].length});
     }
     console.log('get_game_list ret = ' + ret);
     socket.emit('get_game_list_done', {items: ret});
+  }
+
+  /**
+   * 玩家进入房间
+   */
+  socket.on('enter_room', function(data){
+    var roomname = data.roomname,
+        username = socket['username'];
+    // console.log('roomname = ' + roomname);
+    // console.log('username = ' + username);
+    if(games[roomname]['tmpPlayers'].indexOf(username) == -1){
+      games[roomname]['tmpPlayers'].push(username);
+    }
+    socket.join(roomname);  // join a room.
+    socket['roomname'] = roomname;
+    socket.emit('enter_room_done', {});
+
+    socket.broadcast.to(roomname).emit('some_one_entered_room', {roomname: roomname});
   });
+
+  /**
+   * 房间里的玩家
+   */
+  socket.on('get_room_players', function(data){
+    // console.log('### get_room_players was emitted. ###');
+    // console.log(data);
+    var tmpPlayers = games[data.roomname]['tmpPlayers'];
+    // console.log(tmpPlayers);
+    socket.emit('get_room_players_done', {players: tmpPlayers});
+  });
+
+  /**
+   * 返回大厅
+   */
+  socket.on('back_to_hall', function(data){
+    // console.log('########### WTF');
+    // console.log(socket['roomname']);
+    var roomname = socket['roomname'];
+    var idx = games[roomname]['tmpPlayers'].indexOf(socket['username']);
+    // console.log(games[roomname]['tmpPlayers']);
+    games[roomname]['tmpPlayers'].splice(idx, 1);
+    socket.leave(roomname);
+    socket['roomname'] = undefined;
+
+    socket.broadcast.to(roomname).emit('some_one_left_room', {roomname: roomname});
+    socket.emit('back_to_hall_done');
+  })
 });
 
 

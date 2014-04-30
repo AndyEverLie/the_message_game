@@ -166,6 +166,10 @@ Game.prototype.getPlayer = function(num){
 	return (num > 0 && num < this._playerNum) ? this._players[num-1] : null
 }
 
+Game.prototype.getPlayersCount = function(){
+	return this._players.length;
+}
+
 /**
  * 初始化游戏牌
  */
