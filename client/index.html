@@ -69,7 +69,7 @@
             border: 2px solid #666;
             position: absolute;
             top: 132px;
-            left: 300px;
+            left: 220px;
             width: 480px;
             height: 300px;
             text-align: center;
@@ -83,6 +83,7 @@
             text-decoration: none;
             margin-top: 8px;
             list-style: none;
+            margin-right: 30px;
         }
         #games ul li:hover {
             background-color: #999;
@@ -116,6 +117,7 @@
         <div style="margin-top: 20px; text-align: center; font-size: 30px;">请选择游戏</div>
         <ul id="game_list">
         </ul>
+        <div style="margin-left: 40px;"><input id="create_room_name" placeholder="请输入PK地点大名" /><button id="create_room">创建房间</button></div>
     </div>
 
     <script src="cocos2d.js"></script>
@@ -124,18 +126,41 @@
     <script>
         var socket = io.connect('http://localhost:8008');
         socket.on('get_game_list_done', function(data){
+            console.log('get_game_list_done was emitted.');
+            $('#game_list').empty();    // clear the existing list
             $.each(data.items, function(idx, item){
                 $('#game_list').append('<li>' + item + '</li>');
             })
+        });
+        socket.on('username_already_exist', function(data){
+            if(data.status){
+                alert('username ' + data.username + ' already exist');
+                $('#games').hide();
+                $('#dialog').show();
+            }
         })
 
         $(document).ready(function(){
             $('#dialog').show();
         });
         $('#btn_user_login').click(function(){
+            socket.emit('set_username', {username: $('#username').val()})
             socket.emit('get_game_list');
             $('#dialog').hide();
             $('#games').show();
+        });
+
+        $('#create_room').click(function(){
+            var roomname = $('#create_room_name').val();
+            console.log(roomname + '##');
+            // if(/^\s*$/.test(roomname)){
+                socket.emit('create_room', {roomname: roomname});
+                socket.on('create_room_done', function(data){
+                    socket.emit('get_game_list');
+                });
+            // }else{
+            //     alert('世界上没有"'+roomname+'"这个PK地点！');
+            // }
         });
     </script>
 </body>

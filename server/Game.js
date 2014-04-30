@@ -120,7 +120,8 @@ var GAME_STATUS = ['PENDING', 'PLAYING', 'FINISHED'],
 
 	}
 
-function Game(){
+function Game(name){
+	this._name = name;
 	// 游戏牌
 	this._gameCards = [];	// 可用的游戏牌
 	this._usedCards = [];	// 打出的牌堆
@@ -361,7 +362,7 @@ Game.prototype.actionEndRound = function(){}
 Game.prototype.isEndGame = function(){}
 
 
-exports.game = Game;
+exports.Game = Game;
 
 // ==========
 // test data
@@ -378,16 +379,16 @@ var gameParam = {
 	],
 	'numOfCharacters' : 2
 }
-var game = new Game();
-game.phaseGameSetting(gameParam);
-game.phasePickCharacters();
-// console.log('###$$ ' + game._gameCards.length);
+// var game = new Game();
+// game.phaseGameSetting(gameParam);
+// game.phasePickCharacters();
+// // console.log('###$$ ' + game._gameCards.length);
 
-console.log(game.phaseStartGameCards());
+// console.log(game.phaseStartGameCards());
 
-console.log(game.getPlayer(2));
-game.phasePickCharacterDone({1:0, 2:1, 3:1, 4:0, 5:0, 6:1, 7:0});
-console.log(game.getPlayer(2));
+// console.log(game.getPlayer(2));
+// game.phasePickCharacterDone({1:0, 2:1, 3:1, 4:0, 5:0, 6:1, 7:0});
+// console.log(game.getPlayer(2));
 
 
 // console.log(game._characterCards.length);
