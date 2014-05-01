@@ -121,7 +121,7 @@ io.sockets.on('connection', function (socket) {
     // console.log(data);
     var tmpPlayers = games[data.roomname]['tmpPlayers'];
     // console.log(tmpPlayers);
-    socket.emit('get_room_players_done', {players: tmpPlayers});
+    socket.emit('get_room_players_done', {players: tmpPlayers, username: socket['username']});
   });
 
   /**
@@ -134,7 +134,7 @@ io.sockets.on('connection', function (socket) {
     var idx = games[roomname]['tmpPlayers'].indexOf(socket['username']);
     // console.log(games[roomname]['tmpPlayers']);
     games[roomname]['tmpPlayers'].splice(idx, 1);
-    socket.leave(roomname);
+    socket.leave(roomname); // leave the socket broadcast room.
     socket['roomname'] = undefined;
 
     socket.broadcast.to(roomname).emit('some_one_left_room', {roomname: roomname});

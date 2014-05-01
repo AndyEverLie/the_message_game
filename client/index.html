@@ -6,18 +6,14 @@
     <link rel="icon" type="image/GIF" href="res/favicon.ico"/>
     <script src="jquery-1.11.0.min.js"></script>
     <style>
-        /*body, canvas, div {
-            -moz-user-select: none;
-            -webkit-user-select: none;
-            -ms-user-select: none;
-            -khtml-user-select: none;
-            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        }*/
-
         body {
             background-color: #0e0a00;
             background: url(web_res/images/main_bg.jpg);
             width: 100%;
+        }
+
+        ul li {
+            list-style: none;
         }
 
         .main {
@@ -80,13 +76,64 @@
         }
 
         #games ul li {
-            text-decoration: none;
             margin-top: 8px;
-            list-style: none;
             margin-right: 30px;
         }
         #games ul li:hover {
-            background-color: #999;
+            background-color: #666;
+        }
+
+        #room {
+            display: none;
+            border: 2px solid #666;
+            position: absolute;
+            top: 100px;
+            left: 180px;
+            width: 680px;
+            height: 430px;
+            text-align: center;
+            color: #FFFFFF;
+            padding: 10px;
+            text-align: left;
+            background: url(web_res/images/transparency_bg.png) transparent ! important;
+        }
+
+        .room_btn {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+        }
+        .room_btn button {
+            width: 100px;
+            height: 32px;
+        }
+
+        .player_item {
+            float: left;
+            margin: 5px 10px;
+            width: 100px;
+            height: 141px;
+            border: 2px solid #999999;
+            position: relative;
+        }
+        .player_item:hover{
+            border: 2px solid #B32E91;
+        }
+        .player_item img {
+            width: 100px;
+            height: 141px;
+        }
+        .player_item span {
+            position: absolute;
+            bottom: 0px;
+            display: block;
+            color: #B1BAB3;
+            text-align: center;
+            width: 100px;
+            height: 18px;
+            font-size: 14px;
+            border-top: 2px solid #999999;
+            background-color: #5E7062;
         }
     </style>
 </head>
@@ -95,6 +142,7 @@
         <canvas id="gameCanvas" width="1000" height="600"></canvas>
     </div>
 
+    <!-- 登陆窗口 -->
     <div class="dialog" id="dialog">
         <div>
           <img src="web_res/images/dialog_top.png" width="574" height="31">
@@ -113,11 +161,22 @@
         </div>
     </div>
 
+    <!-- 房间选择窗口 -->
     <div id="games">
         <div style="margin-top: 20px; text-align: center; font-size: 30px;">请选择游戏</div>
         <ul id="game_list">
         </ul>
         <div style="margin-left: 40px;"><input id="create_room_name" placeholder="请输入PK地点大名" /><button id="create_room">创建房间</button></div>
+    </div>
+
+    <!-- 房间里面 -->
+    <div id="room">
+        <div style="margin-top: 20px; text-align: center; font-size: 18px;">XX房间</div>
+        <ul id="player_list">
+        </ul>
+        <div class="room_btn">
+            <button id="back_to_hall_btn">返回大厅</button> 
+        </div>
     </div>
 
     <script src="cocos2d.js"></script>
@@ -129,7 +188,7 @@
             console.log('get_game_list_done was emitted.');
             $('#game_list').empty();    // clear the existing list
             $.each(data.items, function(idx, item){
-                $('#game_list').append('<li>' + item + '</li>');
+                $('#game_list').append('<li class="game_to_choose" onclick="enter_room(this);" id="'+item.name+'">' + item.name + ' <span style="color: #FF0000">('+item.count+'人)</span></li>');
             })
         });
         socket.on('username_already_exist', function(data){
@@ -138,7 +197,25 @@
                 $('#games').hide();
                 $('#dialog').show();
             }
-        })
+        });
+        socket.on('get_room_players_done', function(data){
+            // console.log('### get_room_players_done was emitted. ###');
+            $('#player_list').empty();    // clear the existing list
+            $.each(data.players, function(idx, p){
+                if(idx == 0 &&  p == data['username'] && $('#start_game_btn').length == 0) {
+                    $('.room_btn').append('<button id="start_game_btn">开始游戏</button>');
+                }
+                $('#player_list').append('<li class="player_item"><img src="web_res/player_avatars/'+(Math.floor(Math.random()*24)+1)+'.jpg" /><span>'+p+'</span></li>');
+            })
+        });
+        socket.on('some_one_entered_room', function(data){
+            socket.emit('get_room_players', {roomname: data.roomname});
+        });
+        socket.on('some_one_left_room', function(data){
+            console.log('#### some_one_left_room');
+            socket.emit('get_game_list', {});
+            socket.emit('get_room_players', {roomname: data.roomname});
+        });
 
         $(document).ready(function(){
             $('#dialog').show();
@@ -152,16 +229,37 @@
 
         $('#create_room').click(function(){
             var roomname = $('#create_room_name').val();
-            console.log(roomname + '##');
-            // if(/^\s*$/.test(roomname)){
-                socket.emit('create_room', {roomname: roomname});
-                socket.on('create_room_done', function(data){
-                    socket.emit('get_game_list');
-                });
-            // }else{
-            //     alert('世界上没有"'+roomname+'"这个PK地点！');
-            // }
+            // console.log(roomname + '##');
+            socket.emit('create_room', {roomname: roomname});
+            socket.on('create_room_done', function(data){
+                socket.emit('get_game_list');
+            });
         });
+
+        var enter_room = function(el){
+            socket.emit('enter_room', {roomname: el.id});
+            socket.on('enter_room_done', function(){
+                socket.emit('get_game_list');
+                $('#games').hide();
+                $('#room').show();
+                socket.emit('get_room_players', {roomname: el.id});
+            });
+        };
+
+        $('#back_to_hall_btn').click(function(){
+            socket.emit('back_to_hall', {});
+            socket.on('back_to_hall_done', function(){
+                console.log('#### back_to_hall_done');
+                socket.emit('get_game_list');
+            })
+            $('#room').hide();
+            $('#games').show();
+        });
+
+        $('#start_game_btn').click(function(){
+            socket.emit('start_game', {});
+        });
+        
     </script>
 </body>
 </html>
