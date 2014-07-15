@@ -10,9 +10,11 @@ app.listen(8008);
 // connections[data.username]['isDisconnected']
 var connections = {};
 
+console.log('testing');
+
 /**
  * Of current game instances.
- * for the reason that not a bit amount of players, we needn't 
+ * for the reason that not a big amount of players, we needn't
  * optimise the data structure, such as using redis for cache.
  */
 var games = {};
